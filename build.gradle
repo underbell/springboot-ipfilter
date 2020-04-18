@@ -2,10 +2,11 @@ plugins {
     id 'org.springframework.boot' version '2.2.6.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'java'
+    id 'com.google.cloud.tools.jib' version '2.2.0'
 }
 
 group = 'com.underbell'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 sourceCompatibility = '11'
 
 configurations {
@@ -32,4 +33,25 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+jib {
+    allowInsecureRegistries = true
+
+    from {
+        image = "adoptopenjdk/openjdk11"
+    }
+    to {
+        image = "${project.name}:${project.version}"
+    }
+    container {
+        creationTime = "USE_CURRENT_TIMESTAMP"
+        // Set JVM options.
+        jvmFlags = ['-Dserver.port=8080', '-Dspring.profiles.active=local', '-Dfile.encoding=UTF-8']
+        // Expose different port.
+        ports = ['8080']
+        // Add labels.
+        labels = [maintainer: 'kevin <underbell.park@gmail.com>']
+        user = "nobody:nogroup"
+    }
 }

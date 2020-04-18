@@ -1,14 +1,12 @@
 spring:
   profiles:
     active: local
-    #include: 'blacklist'
-    #include: 'blacklist-300'
     include: 'blacklist-3000'
   main.banner-mode: off
 
 server:
   port: 8080
-  forward-headers-strategy: framework
+  forward-headers-strategy: native
   error.whitelabel.enabled: false
 
 logging.level:

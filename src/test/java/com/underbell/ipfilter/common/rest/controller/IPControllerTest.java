@@ -1,5 +1,6 @@
 package com.underbell.ipfilter.common.rest.controller;
 
+import com.underbell.ipfilter.common.rest.dto.IPDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +17,17 @@ class IPControllerTest {
 
     @Test
     public void test01_ipv4() {
-        String ip = webTestClient.mutate().defaultHeader("X-FORWARDED-FOR", "127.0.0.1").build()
+        IPDto ip = webTestClient.mutate().defaultHeader("X-FORWARDED-FOR", "127.0.0.1").build()
                 .get()
                 .uri("/ipv4")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(String.class)
+                .expectBody(IPDto.class)
                 .returnResult()
                 .getResponseBody();
 
         Assertions.assertNotNull(ip);
-        Assertions.assertEquals(ip, "127.0.0.1");
+        Assertions.assertEquals(ip.getSourceIp(), "127.0.0.1");
+        Assertions.assertEquals(ip.getStatus(), "Deny");
     }
 }

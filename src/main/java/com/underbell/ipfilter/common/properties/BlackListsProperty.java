@@ -30,5 +30,6 @@ public class BlackListsProperty {
             subnetUtils.setInclusiveHostCount(true);
             this.ipHsahs.addAll(Arrays.asList(subnetUtils.getInfo().getAllAddresses()));
         }
+        log.info("ipHsahs size = {}", this.ipHsahs.size());
     }
 }

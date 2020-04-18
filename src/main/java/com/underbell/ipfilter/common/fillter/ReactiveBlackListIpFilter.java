@@ -3,6 +3,7 @@ package com.underbell.ipfilter.common.fillter;
 import com.underbell.ipfilter.common.properties.BlackListsProperty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
@@ -15,7 +16,7 @@ import java.util.Optional;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ReactiveSourceIpFilter implements WebFilter {
+public class ReactiveBlackListIpFilter implements WebFilter {
     private final BlackListsProperty blackListsProperty;
 
     @Override
@@ -26,7 +27,10 @@ public class ReactiveSourceIpFilter implements WebFilter {
                     .get(0);
 
             if (blackListsProperty.getIpHsahs().contains(remoteIp)) {
-                return Mono.error(() -> new RuntimeException("deny"));
+                return chain.filter(exchange.mutate().request(
+                        exchange.getRequest().mutate().header("blacklist","true").build()
+                        ).build()
+                );
             }
         }
 
