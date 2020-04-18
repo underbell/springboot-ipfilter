@@ -1,0 +1,17 @@
+spring:
+  profiles:
+    active: local
+    #include: 'blacklist'
+    #include: 'blacklist-300'
+    include: 'blacklist-3000'
+  main.banner-mode: off
+
+server:
+  port: 8080
+  forward-headers-strategy: framework
+  error.whitelabel.enabled: false
+
+logging.level:
+  org.springframework: INFO
+  org.springframework.web: DEBUG
+  com.underbell: DEBUG
