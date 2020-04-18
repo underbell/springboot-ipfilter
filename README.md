@@ -36,7 +36,7 @@ public class BlackListsProperty {
     }
 }
 ```
-#### 3. webfilter를 이용하여 filter 처리 - blacklist 경우 blacklist 추가
+#### 3. webfilter를 이용하여 filter 처리 - blacklist 경우 header에 blacklist 추가
 ```
 @Override
 public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
@@ -87,8 +87,8 @@ locust -f test.py --headless -c 30 -r 30 -t 60s
 ![test1](benchmark/test1.png)
 ###### test2. 차단 IP 목록 300 만개 3회 수행
 ```
-application.yml 내 설정 변경 후 빌드 후 test1과 동일하게 테스트
-include: 'blacklist-300'
+application.yml 설정 변경 및 빌드 후 test1과 동일하게 테스트
+include: 'blacklist' -> include: 'blacklist-300'
 ```
 ![test2-1](benchmark/test2-1.png)
 ---
@@ -97,8 +97,8 @@ include: 'blacklist-300'
 ![test2-3](benchmark/test2-3.png)
 ###### test3. 차단 IP 목록 3000 만개 3회 수행
 ```
-application.yml 내 설정 변경 후 빌드 후 test1과 동일하게 테스트
-include: 'blacklist-3000'
+application.yml 설정 변경 및 빌드 후 test1과 동일하게 테스트
+include: 'blacklist' -> include: 'blacklist-3000'
 ```
 ![test3-1](benchmark/test3-1.png)
 ---
@@ -108,6 +108,6 @@ include: 'blacklist-3000'
 ---
 
 #### HashSet 사용으로 처리 성능에는 크게 영향이 없으나 어플리케이션이 처음 구동 되는 시간의 차이는 발생한다.
-#### 이해를 돕기위해 웹 이미지
+#### 이해를 돕기 위한 Locust 웹 UI
 ![test-web](benchmark/test-web.png)
 
