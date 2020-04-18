@@ -1,7 +1,7 @@
 spring:
   profiles:
     active: local
-    include: 'blacklist-3000'
+    include: 'blacklist'
   main.banner-mode: off
 
 server:

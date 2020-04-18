@@ -14,7 +14,7 @@ blacklists:
 ```
 @Slf4j
 @Component
-@ConfigurationProperties("blacklists")지
+@ConfigurationProperties("blacklists")
 @Getter
 public class BlackListsProperty {
     private boolean filter;
@@ -36,7 +36,7 @@ public class BlackListsProperty {
     }
 }
 ```
-#### 3. webfilter를 이용하여 filter 처리 - blacklist일 경우 runtime exception 발생
+#### 3. webfilter를 이용하여 filter 처리 - blacklist 경우 blacklist 추가
 ```
 @Override
 public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
@@ -46,7 +46,10 @@ public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
                 .get(0);
 
         if (blackListsProperty.getIpHsahs().contains(remoteIp)) {
-            return Mono.error(() -> new RuntimeException("deny"));
+            return chain.filter(exchange.mutate().request(
+                    exchange.getRequest().mutate().header("blacklist","true").build()
+                    ).build()
+            );
         }
     }
 
@@ -54,7 +57,8 @@ public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
 }
 ```
 ---
-#### 빌드(google jib를 이용하여 docker image로 빌드)
+### 테스트를 위한 빌드 과정
+#### 1. 빌드(google jib를 이용하여 docker image로 빌드)
 ```
 git clone https://github.com/underbell/springboot-ipfilter.git
 cd springboot-ipfilter
@@ -62,19 +66,19 @@ cd springboot-ipfilter
 ```
 ###### blacklist 설정 변경이 필요한 경우 application.yml 수정
 
-#### docker run
+#### 2. docker run
 ```
 docker run -p 8080:8080 --name ipfilter ipfilter:0.0.1
 ```
 
-#### api /ipv4 test - status is Allow or Deny
+#### 3. api /ipv4 test - status is Allow or Deny
 ```
 curl -XGET http://localhost:8080/ipv4
 
 {"sourceIp":"172.17.0.1","status":"Allow"}
 ```
 ---
-#### benchmark test using [locust](https://locust.io/)
+### [locust](https://locust.io/) 를 이용한 benchmark test 
 ###### test1. 차단 IP에 해당하는 IP를 랜덤으로 동시성 30, 60초가 수행
 ```
 cd benchmark
@@ -104,6 +108,6 @@ include: 'blacklist-3000'
 ---
 
 #### HashSet 사용으로 처리 성능에는 크게 영향이 없으나 어플리케이션이 처음 구동 되는 시간의 차이는 발생한다.
-#### 이해를 돕기위해 웹 이미
+#### 이해를 돕기위해 웹 이미지
 ![test-web](benchmark/test-web.png)
 
